@@ -21,29 +21,32 @@ async def on_ready():
 
     # メッセージ取得
     print('取得開始')
-    authors = []
+    authorIds = []
+    authorNames = []
     # contents = []
     async for message in channel.history(limit=None):
-        authors += [message.author.display_name]
+        authorIds += [message.author.id]
+        authorNames += [message.author.display_name]
         # contents += [message.content]
-        print('取得完了: {0}'.format(len(authors)), end='\r')
+        print('取得完了: {0}'.format(len(authorIds)), end='\r')
     print('取得完了')
 
     # 加工
     log = pd.DataFrame(
         data={
-            'author': authors,
+            'author_id': authorIds,
+            'author_name': authorNames,
             # 'content': contents,
         },
         columns=[
-            'author',
+            'author_id',
+            'author_name',
             # 'content',
         ]
     )
 
     # 集計
-    df: pd.DataFrame = log.groupby(['author'])['author'].count().reset_index(name='count')
-    df = df.set_index('author')
+    df: pd.DataFrame = log.groupby(['author_id', 'author_name'])['author_id'].count().reset_index(name='count').set_index(['author_id', 'author_name'])
     df = df.sort_values('count', ascending=False)
 
     # 出力
