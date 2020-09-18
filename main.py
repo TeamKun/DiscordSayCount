@@ -20,17 +20,25 @@ async def on_ready():
     channel: discord.TextChannel = guild.get_channel(592669590061056010)
 
     # メッセージ取得
+    print('取得開始')
     authors = []
-    contents = []
-    async for message in channel.history(limit=200):
+    # contents = []
+    async for message in channel.history(limit=None):
         authors += [message.author.display_name]
-        contents += [message.content]
+        # contents += [message.content]
+        print('取得完了: {0}'.format(len(authors)), end='\r')
     print('取得完了')
 
     # 加工
     log = pd.DataFrame(
-        data={'author': authors, 'content': contents},
-        columns=['author', 'content']
+        data={
+            'author': authors,
+            # 'content': contents,
+        },
+        columns=[
+            'author',
+            # 'content',
+        ]
     )
 
     # 集計
@@ -39,6 +47,7 @@ async def on_ready():
     df = df.sort_values('count', ascending=False)
 
     # 出力
+    print('出力開始')
     df.to_csv('output.csv')
     print(df)
 
